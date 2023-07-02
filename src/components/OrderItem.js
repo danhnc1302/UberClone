@@ -3,19 +3,25 @@ import {
     Text,
     View,
     Image,
+    TouchableOpacity,
     StyleSheet
 } from 'react-native'
 import { Entypo } from '@expo/vector-icons';    
+import { useNavigation } from '@react-navigation/native'
 const OrderItem = ({item}) => {
+    const navigation = useNavigation()
+    const handleSelectOrderDetail = () => {
+        navigation.navigate('OrderDetailScreen', {item:item})
+    }
     return (
-        <View style={styles.container}>
+        <TouchableOpacity style={styles.container} onPress={handleSelectOrderDetail}>
             <Image source={{uri: item.order.restaurant.image }} style={styles.image}/>
             <View style={styles.info}>
                 <Text style={styles.name}>{item.order.restaurant.name}</Text>
                 <Text style={styles.text}>Items <Entypo name="dot-single" size={12} color="#777777"/> ${item.total}</Text>
                 <Text style={styles.text}>{item.timeDate} <Entypo name="dot-single" size={12} color="#777777" /> NEW</Text>
             </View>
-        </View>
+        </TouchableOpacity>
     )
 }
 

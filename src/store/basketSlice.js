@@ -64,7 +64,6 @@ export default basketSlice = createSlice({
                 order: state.items.find(item => item.restaurant.id == state.restaurant.id),
                 total: action.payload.total
             }   
-            console.log(order)
             state.orders.push(order)
         }
     }
@@ -93,7 +92,7 @@ export const getBasketItems = (state) => {
 
 export const getSubtotal = (state) => {
     const basketItems = state.basket.items.find(item => item.restaurant.id == state.basket.restaurant.id) 
-    return basketItems.basketDishes.reduce( (sum, item) => sum + item.basketDish.price * item.quantity, 0  );
+    return basketItems.basketDishes.reduce( (sum, item) => sum + item.basketDish.price * item.quantity, 0  ).toFixed(2);
 }
 
 export const getOrderList = (state) => state.basket.orders

@@ -7,16 +7,17 @@ import {
 } from 'react-native'
 
 const ItemBasket = ({dish}) => {
+
     return (
             dish && (
-                <View style={styles.container}>
-                <View style={styles.quantityOfItem}>
-                    <Text style={styles.text}>1</Text>
-                </View>
-                <Text style={styles.name}>{dish.basketDish.name}</Text>
-                <Text style={styles.quantity}>x{dish.quantity}</Text>
-                <Text>${dish.basketDish.price}</Text>
-        </View>
+                    <View style={styles.container}>
+                        <View style={styles.quantityOfItem}>
+                            <Text style={styles.text}>{dish.quantity}</Text>
+                        </View>
+                        <Text style={styles.name}>{dish.basketDish.name}</Text>
+                        <Text>${dish.basketDish.price * dish.quantity}</Text>
+                    </View>
+
             )
         
     )
@@ -37,13 +38,10 @@ const styles = StyleSheet.create({
         alignItems: 'center'
     },
     name: {
+        flex: 1,
         marginHorizontal: 10,
         fontWeight: '600'
     },
-    quantity: {
-        flex: 1
-    }
-    
 })
 
 

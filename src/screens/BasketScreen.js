@@ -19,12 +19,12 @@ const BasketScreen = () => {
     const restaurant = useSelector(getRestaurant)
     const subtotal = useSelector(getSubtotal)
     const navigation = useNavigation()
-    const total = subtotal + restaurant.delivery
+    const total = (parseFloat(subtotal) + restaurant.delivery).toFixed(2)
 
 
     const handleNext = () => {
         dispatch(basketSlice.actions.createOrder({total: total}))
-        navigation.navigate('ListOrderScreen')
+        navigation.navigate('HomeScreen')
     }
     const handleBack = () => {
         navigation.pop()
@@ -49,7 +49,7 @@ const BasketScreen = () => {
                 </View>
                 <View style={styles.row}>
                     <Text>Total</Text>
-                    <Text>${total.toString()}</Text>
+                    <Text>${total}</Text>
                 </View>
             </View>
             <TouchableOpacity onPress={handleNext}>
