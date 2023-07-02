@@ -11,28 +11,18 @@ import {
 import { useRoute, useNavigation } from '@react-navigation/native';
 import { Entypo, FontAwesome, Ionicons } from '@expo/vector-icons';
 
-import restaurants from '../data/restaurant';
 import ManuItem from '../components/ManuItem';
 
 const RestaurantDetailScreen = () => {
     const route = useRoute()
     const navigation = useNavigation()
-    const restaurantId = route.params.restaurantId
-    const [restaurantData, setRestaurantData] = useState(null)
-
-    useEffect(()=> {
-        const restaurantData = restaurants.find(restaurant => restaurant.id == restaurantId)
-        if(restaurantData) {
-            setRestaurantData(restaurantData)
-        }
-    },[])
+    const restaurantData = route.params.restaurant
 
     const handleBack = () => {
         navigation.pop()
     }
 
     return (
-        restaurantData && (
         <View>
              <Image source={{ uri: restaurantData.image }} style={styles.image} />
              <View style={styles.info}>
@@ -53,7 +43,7 @@ const RestaurantDetailScreen = () => {
              <TouchableOpacity style={styles.backBtn} onPress={handleBack}>
                 <Ionicons name="arrow-back" size={24} color="#999999" />
              </TouchableOpacity>
-        </View>)
+        </View>
     )
 }
 

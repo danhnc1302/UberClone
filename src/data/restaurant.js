@@ -3,7 +3,7 @@ export default [
       "id": "1",
       "name": "El Cabo Coffe Bar Tres De Mayo",
       "deliveryFee": 1.4,
-      "minDeliveryTime": 25,
+      "minDeliveryTime": 25,  
       "maxDeliveryTime": 35,
       "rating": 4.0,
       "image": "https://notjustdev-dummy.s3.us-east-2.amazonaws.com/uber-eats/restaurant1.jpeg",

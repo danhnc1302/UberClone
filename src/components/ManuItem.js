@@ -5,12 +5,15 @@ import {
     StyleSheet,
     TouchableOpacity
 } from 'react-native'
+import basketSlice from '../store/basketSlice';
 import { useRoute, useNavigation} from '@react-navigation/native';
-
+import { useDispatch, useSelector } from 'react-redux';
 const ManuItem = ({dish}) => {
     const navigation = useNavigation()
+    const dispatch = useDispatch()
     const handleSelectDish = () => {
-        navigation.navigate('ManuItemDetailScreen', {dishId: dish.id})
+        dispatch(basketSlice.actions.setDishId({ dishId: dish.id })) 
+        navigation.navigate('ManuItemDetailScreen', {dish: dish})
     }
 
     return (
@@ -24,7 +27,6 @@ const ManuItem = ({dish}) => {
 }
 
 const styles = StyleSheet.create({
-
     name: {
         fontWeight: 'bold'
     },
@@ -35,7 +37,6 @@ const styles = StyleSheet.create({
         width: '100%',
         height: 2,
         backgroundColor: '#DDDDDD',
-        margin: 10
     }
 })
 

@@ -7,16 +7,24 @@ import {
     StyleSheet,
     TouchableOpacity
 } from 'react-native'
-import { Entypo } from '@expo/vector-icons';
+import { Entypo } from '@expo/vector-icons';    
 import { useRoute, useNavigation } from '@react-navigation/native';
+import { useSelector, useDispatch } from 'react-redux'
+import basketSlice from '../store/basketSlice'
 
 const screenWidth = Dimensions.get('screen').width
 
 const RestaurantItem = ({restaurant}) => {
     const navigation = useNavigation()
+    const dispatch = useDispatch()
     
     const handleSelectRestaurant = () => {
-        navigation.navigate('RestaurantDetailScreen', {restaurantId:  restaurant.id})
+        dispatch(basketSlice.actions.setRestaurantInfo({ restaurantId: restaurant.id, 
+                                                         restaurantName:restaurant.name, 
+                                                         restaurantImage: restaurant.image,
+                                                         deliveryFee: restaurant.deliveryFee
+                                                        })) 
+        navigation.navigate('RestaurantDetailScreen', {restaurant:  restaurant})
     }
 
     return (
