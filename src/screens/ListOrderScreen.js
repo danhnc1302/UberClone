@@ -10,14 +10,28 @@ import { getOrderList } from '../store/basketSlice'
 import OrderItem from '../components/OrderItem'
 const ListOrderScreen = () => {
     const orderList = useSelector(getOrderList)
-    return (
-        <View style={styles.container}>
-            <FlatList
-                data= {orderList}
-                renderItem={({item}) => <OrderItem item={item} />}
-            />
-        </View>
+    if(orderList.length != 0) {
+        return (
+            <View style={styles.container}>
+                <FlatList
+                    data= {orderList}
+                    renderItem={({item}) => <OrderItem item={item} />}
+                />
+            </View>
     )
+    } else {
+        return (
+            <View style={{
+                flex:1,
+                justifyContent: 'center',
+                alignItems: 'center'
+            }}>
+                <Text>No Order</Text>
+            </View>
+
+        )
+    }
+    
 }
 
 const styles = StyleSheet.create({

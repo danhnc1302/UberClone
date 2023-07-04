@@ -22,17 +22,15 @@ export default function BottomHomeNavigator () {
               return <FontAwesome name="user" size={24} color="black" />;
             }
           },
-          headerShown: false
-        })}
-        tabBarOptions={{
+          headerShown: false,
           activeTintColor: '#000',
           inactiveTintColor: 'gray',
           showLabel: false,
-        }}
+        })}
+      
         >
         <Tab.Screen name="Home" component={HomeRoutes} />
         <Tab.Screen name="Orders" component={OrdersRoutes} />
-
         <Tab.Screen name="Profile" component={ProfileScreen} />
       </Tab.Navigator>
   );

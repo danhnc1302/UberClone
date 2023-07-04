@@ -6,7 +6,12 @@ import { store } from "./src/store";
 import Router from "./src/navigation/Router";
 
 
-export default function App() {
+import { Amplify } from 'aws-amplify'
+import awsconfig from './src/aws-exports'
+import {withAuthenticator } from 'aws-amplify-react-native' 
+Amplify.configure(awsconfig)
+
+const App = () => {
   return (
     <Provider store={store}>
     <NavigationContainer>
@@ -15,4 +20,6 @@ export default function App() {
     </Provider>
   );
 }
+
+export default withAuthenticator(App);
 
