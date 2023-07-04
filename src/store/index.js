@@ -7,5 +7,5 @@ export const store = configureStore({
         basket: basketSlice.reducer,
     }
 })
-
+ 
 setupListeners(store.dispatch)
