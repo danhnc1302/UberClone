@@ -5,38 +5,57 @@ import {
     Image,
     FlatList,
     TouchableOpacity,
-    StyleSheet
+    StyleSheet,
+    ActivityIndicator
 } from 'react-native'
 
 import { useRoute, useNavigation } from '@react-navigation/native';
 import { Entypo, FontAwesome, Ionicons } from '@expo/vector-icons';
 
 import ManuItem from '../components/ManuItem';
+import { DataStore, Predicates } from 'aws-amplify';
+import { Dish, Restaurant } from '../models';
 
 const RestaurantDetailScreen = () => {
-    const route = useRoute()
+    const [restaurant, setRestaurant] = useState()
+    const [dishes, setDishes] = useState([])
+
     const navigation = useNavigation()
-    const restaurantData = route.params.restaurant
+    const route = useRoute()
+    const restaurantId = route.params?.id
 
     const handleBack = () => {
         navigation.pop()
     }
 
+    const fetchData = async () => {
+        await DataStore.query(Restaurant, restaurantId).then(setRestaurant)
+        await DataStore.query(Dish, dish => dish.restaurantID.eq(restaurantId)).then(setDishes);
+    }
+
+    useEffect(() => {
+        fetchData()
+    },[])
+
+    if(!restaurant || !dishes) {
+        return <ActivityIndicator size='large' style={{flex:1, justifyContent: 'center', alignItems: 'center'}}></ActivityIndicator>
+    }
+    
     return (
         <View>
-             <Image source={{ uri: restaurantData.image }} style={styles.image} />
+             <Image source={{ uri: restaurant.image }} style={styles.image} />
              <View style={styles.info}>
-                <Text style={styles.name}>{restaurantData.name}</Text>
+                <Text style={styles.name}>{restaurant.name}</Text>
                 <Text style={styles.rating}>$
                     <Entypo name="dot-single" size={12} color="#777777" />
-                    {restaurantData.rating}
+                    {restaurant.rating.toFixed(1)}
                     <FontAwesome name="star" size={18} color="#F8DB2A" />
                 </Text>
              </View>
              <View style={styles.listOfManu}>
                 <Text style={styles.manu}>Manu</Text>
                 <FlatList 
-                    data={restaurantData.dishes}
+                    data={dishes}
                     renderItem={({item})=> <ManuItem dish={item}/>}
                 />
              </View>

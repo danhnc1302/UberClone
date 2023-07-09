@@ -1,4 +1,4 @@
-import React from 'react'
+import React, {useState, useEffect, useMemo} from 'react'
 import {
     View,
     Text,
@@ -12,15 +12,15 @@ import ItemBasket from '../components/ItemBasket';
 import { getBasketItems, getRestaurant, getSubtotal }  from '../store/basketSlice'
 import { useDispatch, useSelector } from 'react-redux';
 import basketSlice from '../store/basketSlice'
+import WaitIndicator from '../components/WaitIndicator';
 
 const BasketScreen = () => {
+    const navigation = useNavigation()
     const dispatch = useDispatch()
-    const basketItems  = useSelector(getBasketItems)
+    const basketItems = useSelector(getBasketItems);
     const restaurant = useSelector(getRestaurant)
     const subtotal = useSelector(getSubtotal)
-    const navigation = useNavigation()
-    const total = (parseFloat(subtotal) + restaurant.delivery).toFixed(2)
-
+    const total = (parseFloat(subtotal) + restaurant.deliveryFee).toFixed(2)
 
     const handleNext = () => {
         dispatch(basketSlice.actions.createOrder({total: total}))
@@ -29,13 +29,20 @@ const BasketScreen = () => {
     const handleBack = () => {
         navigation.pop()
     }
+
+    if(!restaurant) {
+        return <WaitIndicator/>
+    }
+
     return (
         <View style={styles.container}>
+            
+        {console.log("render")}
             <View>
                 <TouchableOpacity onPress={handleBack}>
                     <Ionicons name="arrow-back" size={30} color="black" style={styles.icon} />
                 </TouchableOpacity>
-                <Text style={styles.name}>{restaurant.name}</Text>
+                <Text style={styles.name}>{ restaurant.name}</Text>
                 <Text style={styles.yourItems}>Your Items</Text>
                 <ItemBasket></ItemBasket>
                 <FlatList 

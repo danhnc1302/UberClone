@@ -11,14 +11,14 @@ import { Feather } from '@expo/vector-icons';
 import { Ionicons } from '@expo/vector-icons';
 import { useRoute, useNavigation} from '@react-navigation/native';
 import basketSlice from '../store/basketSlice';
-import { selectNumOfItems } from '../store/basketSlice';
+import { selectNumOfItems, getDish } from '../store/basketSlice';
+import WaitIndicator from '../components/WaitIndicator'
 
 const ManuItemDetailScreen = () => {
-
     const quantity = useSelector(selectNumOfItems)
+    const dish = useSelector(getDish)
     const navigation = useNavigation()
     const route = useRoute()
-    const dish = route.params.dish
     const dispatch = useDispatch() 
 
     const handleBack = () => {
@@ -36,6 +36,11 @@ const ManuItemDetailScreen = () => {
     const handleAddToBasket = () => {
         navigation.navigate('BasketScreen')
     }
+
+    if(!dish) {
+        return <WaitIndicator/>
+    }
+    
     return (
         <View style={styles.container}>
             <View>

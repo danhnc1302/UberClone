@@ -19,12 +19,8 @@ const RestaurantItem = ({restaurant}) => {
     const dispatch = useDispatch()
     
     const handleSelectRestaurant = () => {
-        dispatch(basketSlice.actions.setRestaurantInfo({ restaurantId: restaurant.id, 
-                                                         restaurantName:restaurant.name, 
-                                                         restaurantImage: restaurant.image,
-                                                         deliveryFee: restaurant.deliveryFee
-                                                        })) 
-        navigation.navigate('RestaurantDetailScreen', {restaurant:  restaurant})
+        dispatch(basketSlice.actions.setRestaurantInfo({ restaurant: restaurant})) 
+        navigation.navigate('RestaurantDetailScreen', {id:  restaurant.id})
     }
 
     return (
@@ -33,10 +29,10 @@ const RestaurantItem = ({restaurant}) => {
            <View style={styles.row}>
                 <Text style={styles.name}>{restaurant.name}</Text>
                 <View style={styles.ratingContainer}>
-                    <Text style={styles.rating}>{restaurant.rating}</Text>
+                    <Text style={styles.rating}>{restaurant.rating.toFixed(1)}</Text>
                 </View>
            </View>
-           <Text style={styles.delivery}>{restaurant.deliveryFee} 
+           <Text style={styles.delivery}>{restaurant.deliveryFee.toFixed(2)} 
            <Entypo name="dot-single" size={12} color="#777777" />
             {restaurant.minDeliveryTime}-{restaurant.maxDeliveryTime} min</Text>
         </TouchableOpacity>

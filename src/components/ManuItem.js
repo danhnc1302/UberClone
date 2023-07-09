@@ -12,10 +12,10 @@ const ManuItem = ({dish}) => {
     const navigation = useNavigation()
     const dispatch = useDispatch()
     const handleSelectDish = () => {
-        dispatch(basketSlice.actions.setDishId({ dishId: dish.id })) 
-        navigation.navigate('ManuItemDetailScreen', {dish: dish})
+        dispatch(basketSlice.actions.setDishInfo({ dish: dish }))
+        navigation.navigate('ManuItemDetailScreen', {dishId: dish.id})
     }
-
+    
     return (
         <TouchableOpacity onPress={handleSelectDish}>
           <Text style={styles.name}>{dish.name}</Text>

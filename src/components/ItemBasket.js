@@ -7,15 +7,14 @@ import {
 } from 'react-native'
 
 const ItemBasket = ({dish}) => {
-
     return (
             dish && (
                     <View style={styles.container}>
                         <View style={styles.quantityOfItem}>
                             <Text style={styles.text}>{dish.quantity}</Text>
                         </View>
-                        <Text style={styles.name}>{dish.basketDish.name}</Text>
-                        <Text>${dish.basketDish.price * dish.quantity}</Text>
+                        <Text style={styles.name}>{dish.dish.name}</Text>
+                        <Text>${(dish.dish.price * dish.quantity).toFixed(2)}</Text>
                     </View>
 
             )

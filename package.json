@@ -9,6 +9,7 @@
     "web": "expo start --web"
   },
   "dependencies": {
+    "@azure/core-asynciterator-polyfill": "^1.0.2",
     "@react-native-async-storage/async-storage": "^1.19.0",
     "@react-native-community/netinfo": "^9.4.1",
     "@react-navigation/bottom-tabs": "^6.5.8",
@@ -17,6 +18,7 @@
     "amazon-cognito-identity-js": "^6.3.1",
     "aws-amplify": "^5.3.3",
     "aws-amplify-react-native": "^7.0.2",
+    "core-js": "^3.31.1",
     "expo": "~48.0.18",
     "expo-status-bar": "~1.4.4",
     "react": "18.2.0",
@@ -24,7 +26,8 @@
     "react-redux": "^8.1.1"
   },
   "devDependencies": {
-    "@babel/core": "^7.20.0"
+    "@babel/core": "^7.20.0",
+    "@babel/plugin-transform-async-to-generator": "^7.22.5"
   },
   "private": true
 }
