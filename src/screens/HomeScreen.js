@@ -8,7 +8,6 @@ import { DataStore } from 'aws-amplify'
 import RestaurantItem from '../components/RestaurantItem'
 import { Restaurant } from '../models'
 
-
 const HomeScreen = () => {
     const [restaurants, setRestaurants] = useState([])
 

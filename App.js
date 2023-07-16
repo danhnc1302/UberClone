@@ -9,6 +9,7 @@ import '@azure/core-asynciterator-polyfill'
 import { Amplify } from 'aws-amplify'
 import awsmobile from './src/aws-exports'
 import { withAuthenticator } from "aws-amplify-react-native";
+import AuthContextProvider  from "./src/context/AuthContext";
 
 Amplify.configure(awsmobile)
 
@@ -17,12 +18,14 @@ const App = () => {
   
   return (
     <Provider store={store}>
-    <NavigationContainer>
-        <Router></Router>
-    </NavigationContainer>
+      <AuthContextProvider>
+        <NavigationContainer>
+            <Router></Router>
+        </NavigationContainer>
+      </AuthContextProvider>
     </Provider>
   );
 }
 
-export default App;
+export default withAuthenticator(App);
 

@@ -17,7 +17,6 @@ const screenWidth = Dimensions.get('screen').width
 const RestaurantItem = ({restaurant}) => {
     const navigation = useNavigation()
     const dispatch = useDispatch()
-    
     const handleSelectRestaurant = () => {
         dispatch(basketSlice.actions.setRestaurantInfo({ restaurant: restaurant})) 
         navigation.navigate('RestaurantDetailScreen', {id:  restaurant.id})
