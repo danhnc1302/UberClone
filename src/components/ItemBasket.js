@@ -27,14 +27,14 @@ const ItemBasket = ({ item, calcSubtotal }) => {
       if (item) {
         getDish();
       }
-    }, [item]);
+    }, []);
   
     useEffect(() => {
-      if (dish && item && item.quantity) {
+      if (calcSubtotal !== undefined && dish && item && item.quantity) {
         const subtotal = (dish.price * item.quantity).toFixed(2);
         calcSubtotal(subtotal);
       }
-    }, [dish, item]);
+    }, [dish]);
 
     return (
             dish && (

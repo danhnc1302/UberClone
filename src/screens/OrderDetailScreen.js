@@ -9,22 +9,27 @@ import {
 import { useRoute, useNavigation} from '@react-navigation/native';
 import { Entypo } from '@expo/vector-icons';    
 import ItemBasket from "../components/ItemBasket";
+import { useDispatch, useSelector } from 'react-redux';
+import { getBasketItems } from '../store/basketSlice'
 
 
 const OrderDetailScreen = () => {
     const route = useRoute()
     const orderInfo = route.params.item
+    const orderDishes = useSelector(state => getBasketItems(state, orderInfo.restaurant.id));
+
+   
     return (
         orderInfo && (
         <View style={styles.container}>
-            <Image source={{uri: orderInfo.order.restaurant.image}} style={styles.image}/>
+            <Image source={{uri: orderInfo.restaurant.image}} style={styles.image}/>
             <View style={styles.infoContainer}>
-            <Text style={styles.name}>{orderInfo.order.restaurant.name}</Text>
+            <Text style={styles.name}>{orderInfo.restaurant.name}</Text>
             <Text style={styles.timeDate}>NEW <Entypo name="dot-single" size={12} color="#777777"/> {orderInfo.timeDate}</Text>
             <Text style={styles.name}>Your Order</Text>
             <FlatList 
-                data={orderInfo.order.basketDishes}
-                renderItem={({item})=> <ItemBasket dish={item}/>}
+                data={orderDishes}
+                renderItem={({item})=> <ItemBasket item={item}/>}
             />
             </View>
         </View>)

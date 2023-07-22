@@ -55,15 +55,17 @@ const basketSlice = createSlice({
             }
           },
         createOrder: (state, action) => {
-            // const timeDate = new Date()
-            // const options = { year: 'numeric', month: '2-digit', day: '2-digit', hour12: false, hour: '2-digit', minute: '2-digit' };
-            // const formattedDateTime = timeDate.toLocaleString(undefined, options);
-            // const order = {
-            //     timeDate: formattedDateTime,
-            //     order: state.items.find(item => item.restaurant.id == state.restaurant.id),
-            //     total: action.payload.total
-            // }   
-            // state.orders.push(order)
+            const timeDate = new Date()
+            const options = { year: 'numeric', month: '2-digit', day: '2-digit', hour12: false, hour: '2-digit', minute: '2-digit' };
+            const formattedDateTime = timeDate.toLocaleString(undefined, options);
+            const restaurantId = action.payload.restaurantId
+            const total = action.payload.total
+            const order = {
+                timeDate: formattedDateTime,
+                restaurantId: state.baskets.find(basket => basket.restaurantId == restaurantId).restaurantId,
+                total: total
+            }   
+            state.orders.push(order)
         }
     }
 })
@@ -87,12 +89,13 @@ export const getBasketQuantity = (state, restaurantId) => {
 }
 
 export const getBasketItems = (state, restaurantId) => {
-    console.log(restaurantId)
-    const baskets = state.basket.baskets.find(basket => basket.restaurantId = restaurantId)
-    console.log(baskets.baskets)
+    const baskets = state.basket.baskets.find(basket => basket.restaurantId == restaurantId)
     return baskets.baskets
 }
 
+export const getOrderList = (state) => {
+    return state.basket.orders
+}
 
 // export const getSubtotal = createSelector(
 //     getBasketItems,

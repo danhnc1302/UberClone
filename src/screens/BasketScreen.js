@@ -39,7 +39,10 @@ const BasketScreen = () => {
     },[])
 
 
-    const handleNext = () => {
+    const handleOrder = () => {
+        dispatch(basketSlice.actions.createOrder({ restaurantId: restaurantId,
+            total: (parseFloat(subTotal) + parseFloat(restaurant.deliveryFee)).toFixed(2)                                            
+        })) 
         navigation.navigate('HomeScreen')
     }
     const handleBack = () => {
@@ -71,7 +74,7 @@ const BasketScreen = () => {
                     <Text>${(parseFloat(subTotal) + parseFloat(restaurant.deliveryFee)).toFixed(2)}</Text>
                 </View>
             </View>
-            <TouchableOpacity onPress={handleNext}>
+            <TouchableOpacity onPress={handleOrder}>
                 <View style={styles.addToBasketBtn}>
                     <Text style={styles.text}>Order</Text>
                 </View>
