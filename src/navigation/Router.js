@@ -9,14 +9,17 @@ const Stack = createNativeStackNavigator();
 const Router = () => {
   const { dbUser } = useAuthContext()
   return (
+    // <Stack.Navigator screenOptions={{headerShown: false}}>
+    //   {
+    //     dbUser ? (
+    //       <Stack.Screen name="BottomHomeNavigator" component={BottomHomeNavigator}/>
+    //     ) : (
+    //       <Stack.Screen name="ProfileScreen" component={ProfileScreen}/>
+    //     )
+    //   }
+    // </Stack.Navigator>
     <Stack.Navigator screenOptions={{headerShown: false}}>
-      {
-        dbUser ? (
           <Stack.Screen name="BottomHomeNavigator" component={BottomHomeNavigator}/>
-        ) : (
-          <Stack.Screen name="ProfileScreen" component={ProfileScreen}/>
-        )
-      }
     </Stack.Navigator>
   );
 };

@@ -4,17 +4,46 @@ import React, { useEffect, useState } from "react";
 import { Auth, DataStore } from "aws-amplify";
 
 import { useNavigation } from "@react-navigation/native";
-
+import { useAuthContext } from "../context/AuthContext";
+import { User } from '../models'
 const ProfileScreen = () => {
-
-    const [name, setName] = useState("");
-    const [address, setAddress] = useState("");
-    const [lat, setLat] = useState("0");
-    const [lng, setLng] = useState("0");
   
+    const { sub, setDbUser, dbUser } = useAuthContext()
+    const [name, setName] = useState(dbUser?.name || "");
+    const [address, setAddress] = useState(dbUser?.address || "");
+    const [lat, setLat] = useState(dbUser?.lat  || "0");
+    const [lng, setLng] = useState(dbUser?.lng || "0");
+    const navigation = useNavigation()
+
     const onSave = async () => {
-     
+      if(dbUser) {
+        await updateUser()
+      } else {
+        await createUser()
+      }
+      navigation.navigate('BottomHomeNavigator') 
     };
+
+    const updateUser = async () => {
+      const user = await DataStore.save(
+        User.copyOf(dbUser, (updated) => {
+          updated.name = name
+          updated.address = address
+          updated.lat = parseFloat(lat)
+          updated.lng = parseFloat(lng)
+        })
+      )
+      setDbUser(user)
+    }
+
+    const createUser = async  () => {
+      try {
+        const user = await DataStore.save(new User({name, address, lat: parseFloat(lat), lng: parseFloat(lng), sub}))
+        setDbUser(user)
+      } catch (e) {
+        Alert.alert("Error", e.massage)
+      }
+    }
    
     return (
       <SafeAreaView>

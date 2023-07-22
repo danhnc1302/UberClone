@@ -5,17 +5,15 @@ import {
     StyleSheet,
     TouchableOpacity
 } from 'react-native'
-import basketSlice from '../store/basketSlice';
-import { useRoute, useNavigation} from '@react-navigation/native';
-import { useDispatch, useSelector } from 'react-redux';
+import { useNavigation} from '@react-navigation/native';
+
+
 const ManuItem = ({dish}) => {
     const navigation = useNavigation()
-    const dispatch = useDispatch()
+   
     const handleSelectDish = () => {
-        dispatch(basketSlice.actions.setDishInfo({ dish: dish }))
         navigation.navigate('ManuItemDetailScreen', {dishId: dish.id})
     }
-    
     return (
         <TouchableOpacity onPress={handleSelectDish}>
           <Text style={styles.name}>{dish.name}</Text>

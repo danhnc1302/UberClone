@@ -9,21 +9,37 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import { useRoute, useNavigation} from '@react-navigation/native';
 import ItemBasket from '../components/ItemBasket';
-import { getBasketItems, getRestaurant, getSubtotal }  from '../store/basketSlice'
+import { getBasketItems, getBasketSubtotal }  from '../store/basketSlice'
 import { useDispatch, useSelector } from 'react-redux';
 import basketSlice from '../store/basketSlice'
 import WaitIndicator from '../components/WaitIndicator';
+import { DataStore} from 'aws-amplify';
+import { Dish, Restaurant } from '../models';
 
 const BasketScreen = () => {
+    const [restaurant, setRestaurant] = useState()
+    const [subTotal, setSubTotal] = useState(0)
     const navigation = useNavigation()
+    const route = useRoute()
+    const restaurantId = route.params.restaurantId
     const dispatch = useDispatch()
-    const basketItems = useSelector(getBasketItems);
-    const restaurant = useSelector(getRestaurant)
-    const subtotal = useSelector(getSubtotal)
-    const total = (parseFloat(subtotal) + restaurant.deliveryFee).toFixed(2)
+    
+    const basketItems = useSelector(state => getBasketItems(state, restaurantId));
+
+    const getRestaurant= async () => {
+        await DataStore.query(Restaurant, restaurantId).then(setRestaurant)
+    }
+
+    const calcSubtotal = (result) => {
+        setSubTotal(parseFloat(subTotal)+ parseFloat(result))
+    }
+
+    useEffect(() => {
+        getRestaurant()
+    },[])
+
 
     const handleNext = () => {
-        dispatch(basketSlice.actions.createOrder({total: total}))
         navigation.navigate('HomeScreen')
     }
     const handleBack = () => {
@@ -33,30 +49,26 @@ const BasketScreen = () => {
     if(!restaurant) {
         return <WaitIndicator/>
     }
-
     return (
         <View style={styles.container}>
-            
-        {console.log("render")}
             <View>
                 <TouchableOpacity onPress={handleBack}>
                     <Ionicons name="arrow-back" size={30} color="black" style={styles.icon} />
                 </TouchableOpacity>
-                <Text style={styles.name}>{ restaurant.name}</Text>
+                <Text style={styles.name}>{restaurant.name}</Text>
                 <Text style={styles.yourItems}>Your Items</Text>
-                <ItemBasket></ItemBasket>
                 <FlatList 
                     data={basketItems}
-                    renderItem={({item}) => <ItemBasket dish={item} />}
+                    renderItem={({item}) => <ItemBasket item={item} calcSubtotal={calcSubtotal} />}
                 />
                 <View style={styles.line}></View>
                 <View style={styles.row}>
                     <Text>Subtotal</Text>
-                    <Text>${subtotal}</Text>
+                    <Text>${subTotal.toFixed(2)}</Text>
                 </View>
                 <View style={styles.row}>
                     <Text>Total</Text>
-                    <Text>${total}</Text>
+                    <Text>${(parseFloat(subTotal) + parseFloat(restaurant.deliveryFee)).toFixed(2)}</Text>
                 </View>
             </View>
             <TouchableOpacity onPress={handleNext}>

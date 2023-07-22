@@ -6,16 +6,22 @@ import {
     FlatList,
     TouchableOpacity,
     StyleSheet,
-    ActivityIndicator
+    ActivityIndicator,
+    Dimensions
 } from 'react-native'
 
 import { useRoute, useNavigation } from '@react-navigation/native';
 import { Entypo, FontAwesome, Ionicons } from '@expo/vector-icons';
 
+
+import { getBasketQuantity } from '../store/basketSlice';
+import { useSelector, useDispatch } from 'react-redux'
+
 import ManuItem from '../components/ManuItem';
-import { DataStore, Predicates } from 'aws-amplify';
+import { DataStore} from 'aws-amplify';
 import { Dish, Restaurant } from '../models';
 
+const screenWidth = Dimensions.get('screen').width
 const RestaurantDetailScreen = () => {
     const [restaurant, setRestaurant] = useState()
     const [dishes, setDishes] = useState([])
@@ -28,6 +34,10 @@ const RestaurantDetailScreen = () => {
         navigation.pop()
     }
 
+    const handleOpenBasket = () => {
+        navigation.navigate('BasketScreen',{restaurantId : restaurantId})
+    }
+
     const fetchData = async () => {
         await DataStore.query(Restaurant, restaurantId).then(setRestaurant)
         await DataStore.query(Dish, dish => dish.restaurantID.eq(restaurantId)).then(setDishes);
@@ -37,12 +47,15 @@ const RestaurantDetailScreen = () => {
         fetchData()
     },[])
 
+    const basketQuantity = useSelector(state => getBasketQuantity(state, restaurantId))
+
     if(!restaurant || !dishes) {
         return <ActivityIndicator size='large' style={{flex:1, justifyContent: 'center', alignItems: 'center'}}></ActivityIndicator>
     }
     
     return (
-        <View>
+        <>
+            <View>
              <Image source={{ uri: restaurant.image }} style={styles.image} />
              <View style={styles.info}>
                 <Text style={styles.name}>{restaurant.name}</Text>
@@ -62,7 +75,15 @@ const RestaurantDetailScreen = () => {
              <TouchableOpacity style={styles.backBtn} onPress={handleBack}>
                 <Ionicons name="arrow-back" size={24} color="#999999" />
              </TouchableOpacity>
-        </View>
+             </View>
+             {
+                basketQuantity > 0 ? (<TouchableOpacity onPress={handleOpenBasket}>
+                    <View style={styles.openBasket}>
+                        <Text style={styles.text}>Open basket ({basketQuantity})</Text>
+                    </View>
+                </TouchableOpacity>) : null
+             }
+        </>
     )
 }
 
@@ -102,6 +123,21 @@ const styles = StyleSheet.create({
         backgroundColor: 'white',
         justifyContent: 'center',
         alignItems: 'center'
+    },
+    openBasket: {
+        position: 'absolute',
+        width: screenWidth - 18,
+        alignSelf: 'center',
+        paddingVertical: 18,
+        paddingHorizontal: 10,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: 'black',
+    }, 
+    text: {
+        color: 'white',
+        fontWeight: '400',
+        fontSize: 14
     }
 })
 

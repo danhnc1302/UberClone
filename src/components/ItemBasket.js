@@ -1,20 +1,49 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import {
     View,
     Text,
     StyleSheet,
     TouchableOpacity
 } from 'react-native'
+import { DataStore} from 'aws-amplify';
+import { Dish, Restaurant } from '../models';
+import WaitIndicator from '../components/WaitIndicator'
+import { getBasketItems } from '../store/basketSlice';
 
-const ItemBasket = ({dish}) => {
+
+const ItemBasket = ({ item, calcSubtotal }) => {
+    const [dish, setDish] = useState();
+  
+    const getDish = async () => {
+      try {
+        const fetchedDish = await DataStore.query(Dish, item.dishId);
+        setDish(fetchedDish);
+      } catch (error) {
+        console.error('Error fetching dish:', error);
+      }
+    };
+  
+    useEffect(() => {
+      if (item) {
+        getDish();
+      }
+    }, [item]);
+  
+    useEffect(() => {
+      if (dish && item && item.quantity) {
+        const subtotal = (dish.price * item.quantity).toFixed(2);
+        calcSubtotal(subtotal);
+      }
+    }, [dish, item]);
+
     return (
             dish && (
                     <View style={styles.container}>
                         <View style={styles.quantityOfItem}>
-                            <Text style={styles.text}>{dish.quantity}</Text>
+                            <Text style={styles.text}>{item.quantity}</Text>
                         </View>
-                        <Text style={styles.name}>{dish.dish.name}</Text>
-                        <Text>${(dish.dish.price * dish.quantity).toFixed(2)}</Text>
+                        <Text style={styles.name}>{dish.name}</Text>
+                        <Text>${(dish.price * item.quantity).toFixed(2)}</Text>
                     </View>
 
             )

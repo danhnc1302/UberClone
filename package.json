@@ -15,6 +15,7 @@
     "@react-navigation/bottom-tabs": "^6.5.8",
     "@react-navigation/native-stack": "^6.9.13",
     "@reduxjs/toolkit": "^1.9.5",
+    "@remobile/react-native-toast": "^1.0.7",
     "amazon-cognito-identity-js": "^6.3.1",
     "aws-amplify": "^5.3.3",
     "aws-amplify-react-native": "^7.0.2",
