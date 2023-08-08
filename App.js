@@ -10,18 +10,19 @@ import { Amplify } from 'aws-amplify'
 import awsmobile from './src/aws-exports'
 import { withAuthenticator } from "aws-amplify-react-native";
 import AuthContextProvider  from "./src/context/AuthContext";
-
+import BasketContextProvider from "./src/context/BasketContext"
 Amplify.configure(awsmobile)
 
 const App = () => {
- 
-  
+   
   return (
     <Provider store={store}>
       <AuthContextProvider>
-        <NavigationContainer>
-            <Router></Router>
-        </NavigationContainer>
+        <BasketContextProvider>
+          <NavigationContainer>
+              <Router></Router>
+          </NavigationContainer>
+        </BasketContextProvider>
       </AuthContextProvider>
     </Provider>
   );

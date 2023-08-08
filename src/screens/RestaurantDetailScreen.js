@@ -12,16 +12,15 @@ import {
 
 import { useRoute, useNavigation } from '@react-navigation/native';
 import { Entypo, FontAwesome, Ionicons } from '@expo/vector-icons';
-
-
 import { getBasketQuantity } from '../store/basketSlice';
 import { useSelector, useDispatch } from 'react-redux'
-
 import ManuItem from '../components/ManuItem';
 import { DataStore} from 'aws-amplify';
 import { Dish, Restaurant } from '../models';
+import { useBasketContext } from '../context/BasketContext'
 
 const screenWidth = Dimensions.get('screen').width
+
 const RestaurantDetailScreen = () => {
     const [restaurant, setRestaurant] = useState()
     const [dishes, setDishes] = useState([])
@@ -29,6 +28,11 @@ const RestaurantDetailScreen = () => {
     const navigation = useNavigation()
     const route = useRoute()
     const restaurantId = route.params?.id
+
+    const {
+        setRestaurant: setBasketRestaurant
+    } = useBasketContext()
+
 
     const handleBack = () => {
         navigation.pop()
@@ -44,10 +48,15 @@ const RestaurantDetailScreen = () => {
     }
 
     useEffect(() => {
+        if(!restaurantId) return;
+        setBasketRestaurant(null)
         fetchData()
-    },[])
+    },[restaurantId])
 
-    const basketQuantity = useSelector(state => getBasketQuantity(state, restaurantId))
+    useEffect(()=> {
+        setBasketRestaurant(restaurant)
+    },[restaurant])
+
 
     if(!restaurant || !dishes) {
         return <ActivityIndicator size='large' style={{flex:1, justifyContent: 'center', alignItems: 'center'}}></ActivityIndicator>
@@ -76,13 +85,13 @@ const RestaurantDetailScreen = () => {
                 <Ionicons name="arrow-back" size={24} color="#999999" />
              </TouchableOpacity>
              </View>
-             {
+             {/* {
                 basketQuantity > 0 ? (<TouchableOpacity onPress={handleOpenBasket}>
                     <View style={styles.openBasket}>
                         <Text style={styles.text}>Open basket ({basketQuantity})</Text>
                     </View>
                 </TouchableOpacity>) : null
-             }
+             } */}
         </>
     )
 }

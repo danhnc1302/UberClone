@@ -7,23 +7,21 @@ import {
     TouchableOpacity,
     Alert
 } from 'react-native'
-import { useSelector, useDispatch } from 'react-redux'
 import { Feather } from '@expo/vector-icons';
 import { Ionicons } from '@expo/vector-icons';
 import { useRoute, useNavigation} from '@react-navigation/native';
-import basketSlice, {getDishQuantity} from '../store/basketSlice';
 import WaitIndicator from '../components/WaitIndicator'
 import { DataStore} from 'aws-amplify';
 import { Dish, Restaurant } from '../models';
-
+import { useBasketContext } from '../context/BasketContext';
 const ManuItemDetailScreen = () => {
     const [dish, setDish] = useState()
-    // const quantity = useSelector(selectNumOfItems)
-    
+    const [quantity, setQuantity] = useState(0)
     const navigation = useNavigation()
     const route = useRoute()
     const dishId = route.params.dishId
-    const dispatch = useDispatch() 
+    
+    const { addDishToBasket } = useBasketContext()
 
     const getDish = async ()  => {
         await DataStore.query(Dish, dishId).then(setDish)
@@ -37,31 +35,20 @@ const ManuItemDetailScreen = () => {
         navigation.pop()
     }
 
-    const increaseQuantity = () => {
-        dispatch(basketSlice.actions.increaseQuantity({ dishId: dishId })) 
+    const onPlus = () => {
+        setQuantity(quantity+1)
     }
     
-    const decreaseQuantity = () => {
-        dispatch(basketSlice.actions.decreaseQuantity({ dishId: dishId })) 
-    }
-
-    const handleAddToBasket = () => {
-        if(quantity != 0) {
-            dispatch(basketSlice.actions.addToBasket({ dishId: dishId, restaurantId: dish.restaurantID }))
-            navigation.pop()
-        } else {
-            Alert.alert('Error', 'Please select the number of dishes', 
-                [{
-                  text: 'OK',
-                  onPress: () => {},
-                  style: 'OK',
-                }],)
+    const onMinus = () => {
+        if(quantity > 1) {
+            setQuantity(quantity-1)
         }
     }
 
-
-
-    const quantity = useSelector(state => getDishQuantity(state, dishId))
+    const handleAddToBasket = async () => {
+        await addDishToBasket(dish, quantity)
+        navigation.navigate("RestaurantDetailScreen")
+    }
 
     if(!dish) {
         return <WaitIndicator/>
@@ -76,11 +63,11 @@ const ManuItemDetailScreen = () => {
                 <Text style={styles.description}>{dish.description}</Text>
                 <View style={styles.line}></View>
                 <View style={styles.modifyQuantity}>
-                    <TouchableWithoutFeedback onPress={decreaseQuantity}>
+                    <TouchableWithoutFeedback onPress={onMinus}>
                         <Feather name="minus-circle" size={45} color="black" />
                     </TouchableWithoutFeedback>
                     <Text style={styles.itemQuantity}>{quantity}</Text>
-                    <TouchableWithoutFeedback onPress={increaseQuantity}>
+                    <TouchableWithoutFeedback onPress={onPlus}>
                         <Feather name="plus-circle" size={45} color="black" />
                     </TouchableWithoutFeedback>
                 </View>

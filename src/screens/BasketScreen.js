@@ -1,4 +1,4 @@
-import React, {useState, useEffect, useMemo} from 'react'
+import React, { useState, useEffect, useMemo } from 'react'
 import {
     View,
     Text,
@@ -7,50 +7,74 @@ import {
     FlatList,
 } from 'react-native'
 import { Ionicons } from '@expo/vector-icons';
-import { useRoute, useNavigation} from '@react-navigation/native';
+import { useRoute, useNavigation } from '@react-navigation/native';
 import ItemBasket from '../components/ItemBasket';
-import { getBasketItems, getBasketSubtotal }  from '../store/basketSlice'
+import { getBasketItems, getBasketSubtotal } from '../store/basketSlice'
 import { useDispatch, useSelector } from 'react-redux';
 import basketSlice from '../store/basketSlice'
 import WaitIndicator from '../components/WaitIndicator';
-import { DataStore} from 'aws-amplify';
-import { Dish, Restaurant } from '../models';
+import { DataStore } from 'aws-amplify';
+import { Dish, Restaurant, Order, OrderDish } from '../models';
 
 const BasketScreen = () => {
+    const { dbUser } = useAuthContext();
     const [restaurant, setRestaurant] = useState()
     const [subTotal, setSubTotal] = useState(0)
     const navigation = useNavigation()
     const route = useRoute()
     const restaurantId = route.params.restaurantId
     const dispatch = useDispatch()
-    
-    const basketItems = useSelector(state => getBasketItems(state, restaurantId));
 
-    const getRestaurant= async () => {
+    const basketDishes = useSelector(state => getBasketItems(state, restaurantId));
+
+    const getRestaurant = async () => {
         await DataStore.query(Restaurant, restaurantId).then(setRestaurant)
     }
 
     const calcSubtotal = (result) => {
-        setSubTotal(parseFloat(subTotal)+ parseFloat(result))
+        setSubTotal(parseFloat(subTotal) + parseFloat(result))
     }
 
     useEffect(() => {
         getRestaurant()
-    },[])
+    }, [])
 
 
-    const handleOrder = () => {
-        dispatch(basketSlice.actions.createOrder({ restaurantId: restaurantId,
-            total: (parseFloat(subTotal) + parseFloat(restaurant.deliveryFee)).toFixed(2)                                            
-        })) 
+    const handleOrder = async () => {
+        const newOrder = await DataStore.save(
+            new Order({
+                userID: dbUser,
+                Restaurant: restaurant,
+                status: "NEW",
+                total: (parseFloat(subTotal) + parseFloat(restaurant.deliveryFee)).toFixed(2)
+            })
+        )
+
+        await Promise.all(
+            basketDishes.map((basketDish) =>
+                DataStore.save(
+                    new OrderDish({
+                        quantity: basketDish.quantity,
+                        orderID: newOrder.id,
+                        Dish: basketDish.Dish,
+                    })
+                )
+            )
+        );
+
+        dispatch(basketSlice.actions.createOrder({
+            restaurantId: restaurantId,
+            total: (parseFloat(subTotal) + parseFloat(restaurant.deliveryFee)).toFixed(2)
+        }))
+
         navigation.navigate('HomeScreen')
     }
     const handleBack = () => {
         navigation.pop()
     }
 
-    if(!restaurant) {
-        return <WaitIndicator/>
+    if (!restaurant) {
+        return <WaitIndicator />
     }
     return (
         <View style={styles.container}>
@@ -60,9 +84,9 @@ const BasketScreen = () => {
                 </TouchableOpacity>
                 <Text style={styles.name}>{restaurant.name}</Text>
                 <Text style={styles.yourItems}>Your Items</Text>
-                <FlatList 
+                <FlatList
                     data={basketItems}
-                    renderItem={({item}) => <ItemBasket item={item} calcSubtotal={calcSubtotal} />}
+                    renderItem={({ item }) => <ItemBasket item={item} calcSubtotal={calcSubtotal} />}
                 />
                 <View style={styles.line}></View>
                 <View style={styles.row}>
@@ -85,7 +109,7 @@ const BasketScreen = () => {
 
 const styles = StyleSheet.create({
     container: {
-        flex:1,
+        flex: 1,
         paddingHorizontal: 18,
         paddingVertical: 50,
         justifyContent: 'space-between'

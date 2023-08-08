@@ -19,6 +19,7 @@ const HomeScreen = () => {
     useEffect( () => {
       fetchRestaurants()
     },[])
+    
     return (
         <View style={styles.container}>
             <FlatList

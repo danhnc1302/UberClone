@@ -17,7 +17,6 @@ const ListOrderScreen = () => {
         const [isLoading, setIsLoading] = useState(true)
 
         const getOrders = async () => {
-            console.log(orderList)
             const orderPromises = orderList.map(async (order) => {
                 const restaurant = await DataStore.query(Restaurant, order.restaurantId)
                 const orderTemp = {
@@ -36,7 +35,6 @@ const ListOrderScreen = () => {
             getOrders()
         }, [orderList])
 
-        console.log(orders)
         if (isLoading) {
             return (
                 <View style={{
