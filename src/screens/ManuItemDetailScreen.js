@@ -23,13 +23,11 @@ const ManuItemDetailScreen = () => {
     
     const { addDishToBasket } = useBasketContext()
 
-    const getDish = async ()  => {
-        await DataStore.query(Dish, dishId).then(setDish)
-    }
-
     useEffect(() => {
-        getDish()
-    },[])
+        if (dishId) {
+            DataStore.query(Dish, dishId).then(setDish)
+        }
+    },[dishId])
 
     const handleBack = () => {
         navigation.pop()

@@ -24,9 +24,11 @@ const BasketContextProvider = ({ children }) => {
             }).then(setBasketDishes)
         }
     }, [basket])
+
     const addDishToBasket = async (dish, quantity) => {
         let theBasket;
         theBasket = basket || (await createNewBasket());
+
         if (theBasket) {
             const newDish = await DataStore.save(
                 new BasketDish({ quantity, Dish: dish, basketID: theBasket.id })
@@ -36,13 +38,19 @@ const BasketContextProvider = ({ children }) => {
     }
 
     const createNewBasket = async () => {
-        console.log(dbUser.id);
         const newBasket = await DataStore.save(
             new Basket({ userID: dbUser.id, restaurantID: restaurant.id })
         );
         setBasket(newBasket);
         return newBasket;
     }
+
+    const totalPrice = 
+        basketDishes.reduce(
+            (sum, basketDish) =>  sum + basketDish.quantity * basketDish.Dish.price,
+            restaurant?.deliveryFee
+        )
+    
 
 
 
@@ -54,6 +62,7 @@ const BasketContextProvider = ({ children }) => {
                 restaurant,
                 basket,
                 basketDishes,
+                totalPrice
             }}
         >
             {children}

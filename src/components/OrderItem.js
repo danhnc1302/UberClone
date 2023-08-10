@@ -1,4 +1,4 @@
-import React from "react"
+import React, {useState} from "react"
 import {
     Text,
     View,
@@ -8,20 +8,40 @@ import {
 } from 'react-native'
 import { Entypo } from '@expo/vector-icons';    
 import { useNavigation } from '@react-navigation/native'
+import { useEffect } from "react";
+import { DataStore } from 'aws-amplify';
+import { Restaurant,Order } from "../models";
+import WaitIndicator from "./WaitIndicator";
+
 const OrderItem = ({item}) => {
+    const [restaurant, setRestaurant] = useState()
+    const [order, setOrder] = useState()
+  
     const navigation = useNavigation()
     const handleSelectOrderDetail = () => {
         navigation.navigate('OrderDetailScreen', {item:item})
     }
+
+    const getData = async () => {
+        await DataStore.query(Restaurant, item.orderRestaurantId).then(setRestaurant)
+        await DataStore.query(Order, item.id).then(setOrder)
+    }
+
+    useEffect(() => {
+        getData()
+    }, [item.orderRestaurantId, item.id]);
+    
+    if(!restaurant || !order) 
+        return <WaitIndicator></WaitIndicator>
     return (
-        <TouchableOpacity style={styles.container} onPress={handleSelectOrderDetail}>
-            <Image source={{uri: item.restaurant.image }} style={styles.image}/>
-            <View style={styles.info}>
-                <Text style={styles.name}>{item.restaurant.name}</Text>
-                <Text style={styles.text}>Items <Entypo name="dot-single" size={12} color="#777777"/> ${item.total}</Text>
-                <Text style={styles.text}>{item.timeDate} <Entypo name="dot-single" size={12} color="#777777" /> NEW</Text>
-            </View>
-        </TouchableOpacity>
+            <TouchableOpacity style={styles.container} onPress={handleSelectOrderDetail}>
+                <Image source={{uri: restaurant.image }} style={styles.image}/>
+                <View style={styles.info}>
+                    <Text style={styles.name}>{restaurant.name}</Text>
+                    <Text style={styles.text}>Items <Entypo name="dot-single" size={12} color="#777777"/> ${item.total.toFixed(2)}</Text>
+                    <Text style={styles.text}>{order.createdAt} <Entypo name="dot-single" size={12} color="#777777" /> {item.status}</Text>
+                </View>
+            </TouchableOpacity>
     )
 }
 

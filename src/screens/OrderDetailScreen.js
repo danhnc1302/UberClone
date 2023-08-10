@@ -16,8 +16,6 @@ import { getBasketItems } from '../store/basketSlice'
 const OrderDetailScreen = () => {
     const route = useRoute()
     const orderInfo = route.params.item
-    const orderDishes = useSelector(state => getBasketItems(state, orderInfo.restaurant.id));
-
    
     return (
         orderInfo && (

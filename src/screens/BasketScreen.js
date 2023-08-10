@@ -9,64 +9,33 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import { useRoute, useNavigation } from '@react-navigation/native';
 import ItemBasket from '../components/ItemBasket';
-import { getBasketItems, getBasketSubtotal } from '../store/basketSlice'
 import { useDispatch, useSelector } from 'react-redux';
 import basketSlice from '../store/basketSlice'
 import WaitIndicator from '../components/WaitIndicator';
 import { DataStore } from 'aws-amplify';
-import { Dish, Restaurant, Order, OrderDish } from '../models';
+import { Dish, Restaurant, Order, OrderDish, BasketDish } from '../models';
+import { useBasketContext } from '../context/BasketContext';
+import { useAuthContext } from '../context/AuthContext';
+import { useOrderContext } from '../context/OrderContext';
+
 
 const BasketScreen = () => {
     const { dbUser } = useAuthContext();
-    const [restaurant, setRestaurant] = useState()
-    const [subTotal, setSubTotal] = useState(0)
     const navigation = useNavigation()
     const route = useRoute()
-    const restaurantId = route.params.restaurantId
-    const dispatch = useDispatch()
 
-    const basketDishes = useSelector(state => getBasketItems(state, restaurantId));
+    const {
+        restaurant,
+        basketDishes,
+        totalPrice
+    } = useBasketContext()
 
-    const getRestaurant = async () => {
-        await DataStore.query(Restaurant, restaurantId).then(setRestaurant)
-    }
-
-    const calcSubtotal = (result) => {
-        setSubTotal(parseFloat(subTotal) + parseFloat(result))
-    }
-
-    useEffect(() => {
-        getRestaurant()
-    }, [])
-
+    const {
+        createOrder
+    } = useOrderContext()
 
     const handleOrder = async () => {
-        const newOrder = await DataStore.save(
-            new Order({
-                userID: dbUser,
-                Restaurant: restaurant,
-                status: "NEW",
-                total: (parseFloat(subTotal) + parseFloat(restaurant.deliveryFee)).toFixed(2)
-            })
-        )
-
-        await Promise.all(
-            basketDishes.map((basketDish) =>
-                DataStore.save(
-                    new OrderDish({
-                        quantity: basketDish.quantity,
-                        orderID: newOrder.id,
-                        Dish: basketDish.Dish,
-                    })
-                )
-            )
-        );
-
-        dispatch(basketSlice.actions.createOrder({
-            restaurantId: restaurantId,
-            total: (parseFloat(subTotal) + parseFloat(restaurant.deliveryFee)).toFixed(2)
-        }))
-
+        await createOrder()
         navigation.navigate('HomeScreen')
     }
     const handleBack = () => {
@@ -85,17 +54,17 @@ const BasketScreen = () => {
                 <Text style={styles.name}>{restaurant.name}</Text>
                 <Text style={styles.yourItems}>Your Items</Text>
                 <FlatList
-                    data={basketItems}
-                    renderItem={({ item }) => <ItemBasket item={item} calcSubtotal={calcSubtotal} />}
+                    data={basketDishes}
+                    renderItem={({ item }) => <ItemBasket item={item} s/>}
                 />
                 <View style={styles.line}></View>
                 <View style={styles.row}>
                     <Text>Subtotal</Text>
-                    <Text>${subTotal.toFixed(2)}</Text>
+                    <Text>${(parseFloat(totalPrice) - parseFloat(restaurant.deliveryFee)).toFixed(2)}</Text>
                 </View>
                 <View style={styles.row}>
                     <Text>Total</Text>
-                    <Text>${(parseFloat(subTotal) + parseFloat(restaurant.deliveryFee)).toFixed(2)}</Text>
+                    <Text>${totalPrice.toFixed(2)}</Text>
                 </View>
             </View>
             <TouchableOpacity onPress={handleOrder}>

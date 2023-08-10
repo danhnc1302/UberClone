@@ -30,7 +30,9 @@ const RestaurantDetailScreen = () => {
     const restaurantId = route.params?.id
 
     const {
-        setRestaurant: setBasketRestaurant
+        setRestaurant: setBasketRestaurant,
+        basket,
+        basketDishes
     } = useBasketContext()
 
 
@@ -39,7 +41,7 @@ const RestaurantDetailScreen = () => {
     }
 
     const handleOpenBasket = () => {
-        navigation.navigate('BasketScreen',{restaurantId : restaurantId})
+        navigation.navigate('BasketScreen')
     }
 
     const fetchData = async () => {
@@ -85,13 +87,13 @@ const RestaurantDetailScreen = () => {
                 <Ionicons name="arrow-back" size={24} color="#999999" />
              </TouchableOpacity>
              </View>
-             {/* {
-                basketQuantity > 0 ? (<TouchableOpacity onPress={handleOpenBasket}>
+             {
+                basket && (<TouchableOpacity onPress={handleOpenBasket}>
                     <View style={styles.openBasket}>
-                        <Text style={styles.text}>Open basket ({basketQuantity})</Text>
+                        <Text style={styles.text}>Open basket ({basketDishes.length})</Text>
                     </View>
-                </TouchableOpacity>) : null
-             } */}
+                </TouchableOpacity>) 
+             }
         </>
     )
 }
