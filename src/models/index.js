@@ -14,7 +14,7 @@ const OrderStatus = {
   "COMPLETED": "COMPLETED"
 };
 
-const { Courier, OrderDish, BasketDish, Order, Basket, User, Dish, Restaurant, BasketDishDish } = initSchema(schema);
+const { Courier, OrderDish, BasketDish, Order, Basket, User, Dish, Restaurant, OrderCourier, OrderDishDish, BasketDishDish, OrderRestaurant } = initSchema(schema);
 
 export {
   Courier,
@@ -25,7 +25,10 @@ export {
   User,
   Dish,
   Restaurant,
+  OrderCourier,
+  OrderDishDish,
   BasketDishDish,
+  OrderRestaurant,
   TransportationModes,
   OrderStatus
 };

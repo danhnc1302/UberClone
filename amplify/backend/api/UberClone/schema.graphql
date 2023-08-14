@@ -10,13 +10,14 @@ type Courier @model @auth(rules: [{allow: public}]) {
   lat: Float
   lng: Float
   transportationMode: TransportationModes!
+  orders: [Order] @manyToMany(relationName: "OrderCourier")
 }
 
 type OrderDish @model @auth(rules: [{allow: public}]) {
   id: ID!
   quantity: Int!
-  Dish: Dish @hasOne
   orderID: ID! @index(name: "byOrder")
+  Dishes: [Dish] @manyToMany(relationName: "OrderDishDish")
 }
 
 type BasketDish @model @auth(rules: [{allow: public}]) {
@@ -36,10 +37,10 @@ enum OrderStatus {
 type Order @model @auth(rules: [{allow: public}]) {
   id: ID!
   status: OrderStatus!
-  Restaurant: Restaurant @hasOne
   userID: ID! @index(name: "byUser")
   OrderDishes: [OrderDish] @hasMany(indexName: "byOrder", fields: ["id"])
-  Courier: Courier @hasOne
+  Restaurants: [Restaurant] @manyToMany(relationName: "OrderRestaurant")
+  Couriers: [Courier] @manyToMany(relationName: "OrderCourier")
 }
 
 type Basket @model @auth(rules: [{allow: public}]) {
@@ -68,6 +69,7 @@ type Dish @model @auth(rules: [{allow: public}]) {
   price: Float!
   restaurantID: ID! @index(name: "byRestaurant")
   basketdishs: [BasketDish] @manyToMany(relationName: "BasketDishDish")
+  orderdishs: [OrderDish] @manyToMany(relationName: "OrderDishDish")
 }
 
 type Restaurant @model @auth(rules: [{allow: public}]) {
@@ -83,5 +85,6 @@ type Restaurant @model @auth(rules: [{allow: public}]) {
   lng: Float!
   Dishes: [Dish] @hasMany(indexName: "byRestaurant", fields: ["id"])
   Baskets: [Basket] @hasMany(indexName: "byRestaurant", fields: ["id"])
+  orders: [Order] @manyToMany(relationName: "OrderRestaurant")
 }
  

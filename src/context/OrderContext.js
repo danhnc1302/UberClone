@@ -11,12 +11,12 @@ const OrderContextProvider = ({ children }) => {
     const { restaurant, totalPrice, basketDishes, basket } = useBasketContext();
 
     const [orders, setOrders] = useState([]);
-
     useEffect(() => {
         DataStore.query(Order, (o) => o.userID("eq", dbUser.id)).then(setOrders);
     }, [dbUser]);
 
     const createOrder = async () => {
+
         const newOrder = await DataStore.save(
             new Order({
                 userID: dbUser.id,
@@ -26,7 +26,6 @@ const OrderContextProvider = ({ children }) => {
             })
         );
 
-        // add all basketDishes to the order
         await Promise.all(
             basketDishes.map((basketDish) => {
                 const dishInstance = new Dish({
@@ -47,6 +46,7 @@ const OrderContextProvider = ({ children }) => {
             }
             )
         )
+
         // delete basket
         await DataStore.delete(basket);
 

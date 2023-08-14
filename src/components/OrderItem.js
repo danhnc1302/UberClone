@@ -14,7 +14,6 @@ import { Restaurant,Order } from "../models";
 import WaitIndicator from "./WaitIndicator";
 
 const OrderItem = ({item}) => {
-    const [restaurant, setRestaurant] = useState()
     const [order, setOrder] = useState()
   
     const navigation = useNavigation()
@@ -22,22 +21,17 @@ const OrderItem = ({item}) => {
         navigation.navigate('OrderDetailScreen', {item:item})
     }
 
-    const getData = async () => {
-        await DataStore.query(Restaurant, item.orderRestaurantId).then(setRestaurant)
-        await DataStore.query(Order, item.id).then(setOrder)
-    }
-
     useEffect(() => {
-        getData()
-    }, [item.orderRestaurantId, item.id]);
+        DataStore.query(Order, item.id).then(setOrder)
+    }, [item.id]);
     
-    if(!restaurant || !order) 
+    if(!order) 
         return <WaitIndicator></WaitIndicator>
     return (
             <TouchableOpacity style={styles.container} onPress={handleSelectOrderDetail}>
-                <Image source={{uri: restaurant.image }} style={styles.image}/>
+                <Image source={{uri: item.Restaurant.image }} style={styles.image}/>
                 <View style={styles.info}>
-                    <Text style={styles.name}>{restaurant.name}</Text>
+                    <Text style={styles.name}>{item.Restaurant.name}</Text>
                     <Text style={styles.text}>Items <Entypo name="dot-single" size={12} color="#777777"/> ${item.total.toFixed(2)}</Text>
                     <Text style={styles.text}>{order.createdAt} <Entypo name="dot-single" size={12} color="#777777" /> {item.status}</Text>
                 </View>

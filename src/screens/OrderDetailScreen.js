@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useEffect, useState} from "react";
 import {
     Text,
     View,
@@ -9,24 +9,43 @@ import {
 import { useRoute, useNavigation} from '@react-navigation/native';
 import { Entypo } from '@expo/vector-icons';    
 import ItemBasket from "../components/ItemBasket";
-import { useDispatch, useSelector } from 'react-redux';
-import { getBasketItems } from '../store/basketSlice'
-
+import {Order, OrderDish} from '../models'
+import { useOrderContext } from "../context/OrderContext";
+import { DataStore } from "aws-amplify";
 
 const OrderDetailScreen = () => {
+    const [orderDish, setOrderDish] = useState()
     const route = useRoute()
     const orderInfo = route.params.item
-   
+
+
+    const getData = async () => {
+        const orderDishes = await DataStore.query(OrderDish, (od) =>
+        od.orderID("eq", orderInfo.id)
+    );
+        if (orderDishes.length > 0) {
+            setOrderDish(orderDishes);
+        } else {
+            console.log("No order dishes found for the given orderID.");
+        }
+    }
+
+    useEffect(() => {
+       getData()
+    }, [orderInfo.id]);
+    
+
+    console.log(orderDish)
     return (
         orderInfo && (
         <View style={styles.container}>
-            <Image source={{uri: orderInfo.restaurant.image}} style={styles.image}/>
+            <Image source={{uri: orderInfo.Restaurant.image}} style={styles.image}/>
             <View style={styles.infoContainer}>
-            <Text style={styles.name}>{orderInfo.restaurant.name}</Text>
-            <Text style={styles.timeDate}>NEW <Entypo name="dot-single" size={12} color="#777777"/> {orderInfo.timeDate}</Text>
+            <Text style={styles.name}>{orderInfo.Restaurant.name}</Text>
+            <Text style={styles.timeDate}>NEW <Entypo name="dot-single" size={12} color="#777777"/> {orderInfo.Restaurant.createdAt}</Text>
             <Text style={styles.name}>Your Order</Text>
             <FlatList 
-                data={orderDishes}
+                data={orderDish}
                 renderItem={({item})=> <ItemBasket item={item}/>}
             />
             </View>
